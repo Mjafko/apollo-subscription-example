@@ -1,21 +1,38 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react'
+import gql from 'graphql-tag'
+import { Query } from 'react-apollo'
+import Messages from './Messages'
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
-  }
-}
+const GET_MESSAGES = gql`
+	query {
+		messages {
+			id,
+			message
+		}
+	}
+`
 
-export default App;
+
+
+const App = () => (
+	<Query query={ GET_MESSAGES }>
+		{
+			({ data, loading, subscribeToMore }) => {
+				if(!data) {
+					return null
+				}
+				if(loading) {
+					return <p>Loading...</p>
+				}
+				return(
+					<Messages
+						messages={ data.messages }
+						subscribeToMore={ subscribeToMore }
+					/>
+				)
+			}
+		}
+	</Query>
+)
+
+export default App
